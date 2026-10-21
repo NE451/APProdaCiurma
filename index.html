@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animatori 2026/27 — Tracker Presenze</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/">🌟 ANIMATORI <span>2026/27</span></a>
+    <nav>
+      <a href="#/">Tracker</a>
+      <a href="#/admin/login" class="admin-link">🔐 Area Educatori</a>
+      <button class="theme-btn" id="theme-toggle" type="button" aria-label="Cambia stile">🌙 <span>Stile</span></button>
+    </nav>
+  </header>
+  <main id="app"></main>
+  <footer>Prototipo V1 · Dati sincronizzati con Supabase</footer>
+  <!-- Load the SDK first: app.js uses window.supabase to create the client. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
