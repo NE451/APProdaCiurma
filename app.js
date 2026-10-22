@@ -32,6 +32,26 @@ document.querySelector("#theme-toggle").addEventListener("click", cycleTheme);
 const db={threshold:70,animators:[],meetings:[],attendance:{}};
 let selectedMeetingId=null;
 let currentUser=null;
+function getUserDisplayName(user){
+  const metadata=user?.user_metadata||{};
+  return metadata.full_name||metadata.name||metadata.display_name||user?.email||"Educatore";
+}
+function updateAuthStatus(){
+  const status=document.querySelector("#auth-status");
+  if(!status)return;
+  if(!currentUser){
+    status.innerHTML="";
+    return;
+  }
+  status.innerHTML=`<button class="admin-link" type="button" onclick="signOut()">👤 ${esc(getUserDisplayName(currentUser))} · Esci</button>`;
+}
+async function signOut(){
+  const {error}=await supabaseClient.auth.signOut();
+  if(error){showError(error);return}
+  currentUser=null;
+  updateAuthStatus();
+  location.hash="#/";
+}
 function showError(error){
   console.error("Errore:",error);
   const detail=[error.code,error.details].filter(Boolean).join(" · ");
@@ -118,6 +138,7 @@ async function signIn(event){
  const {data,error}=await supabaseClient.auth.signInWithPassword({email:document.querySelector("#email").value.trim(),password:document.querySelector("#pw").value});
  if(error){alert(`Accesso non riuscito: ${error.message}`);return}
  currentUser=data.user;
+ updateAuthStatus();
  location.hash="#/admin";
 }
 async function requireAuth(page){
@@ -173,8 +194,10 @@ async function startApp(){
   try{
     const {data:{session}}=await supabaseClient.auth.getSession();
     currentUser=session?.user||null;
+    updateAuthStatus();
     supabaseClient.auth.onAuthStateChange((_event,nextSession)=>{
       currentUser=nextSession?.user||null;
+      updateAuthStatus();
     });
     await loadFromSupabase();
     app();
