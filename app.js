@@ -32,6 +32,8 @@ document.querySelector("#theme-toggle").addEventListener("click", cycleTheme);
 const db={threshold:70,animators:[],meetings:[],attendance:{}};
 let selectedMeetingId=null;
 let currentUser=null;
+let animatorSearch="";
+let animatorSort="az";
 function getUserDisplayName(user){
   const metadata=user?.user_metadata||{};
   return metadata.display_name||metadata.full_name||metadata.name||user?.email||"Educatore";
@@ -118,11 +120,28 @@ function app(){let hash=location.hash||"#/"; if(hash==="#/")home(); else if(hash
 window.addEventListener("hashchange",app);
 function home(){
  const req=requiredGroups(), opt=db.meetings.filter(m=>m.type==="facoltativo");
+ const visibleAnimators=db.animators
+   .filter(a=>a.nickname.toLocaleLowerCase("it-IT").includes(animatorSearch.toLocaleLowerCase("it-IT")))
+   .sort((a,b)=>animatorSort==="za"
+     ? b.nickname.localeCompare(a.nickname,"it",{sensitivity:"base"})
+     : a.nickname.localeCompare(b.nickname,"it",{sensitivity:"base"}));
  document.querySelector("#app").innerHTML=`
  <section class="hero"><div class="eyebrow">🌟 Animatori 2026/27</div><h1>Tracker Presenze</h1><p>Controlla le presenze del gruppo e verifica il raggiungimento dell'obiettivo del <b>${db.threshold}%</b> sugli incontri obbligatori.</p></section>
  <div class="stats"><div class="stat"><b>${req.length}</b><small>obblighi obbligatori programmati</small></div><div class="stat"><b>${opt.length}</b><small>incontri facoltativi</small></div></div>
  <div class="section-title"><h2>👥 Animatori</h2><span class="muted">Clicca su un nome per il dettaglio</span></div>
- <div class="cards">${db.animators.map(a=>{const s=stats(a),st=status(s);return `<article class="card anim-card" onclick="location.hash='#/animatore/${a.id}'"><div class="row"><div class="nickname">${esc(a.nickname)}</div><div class="pct">${s.pct}%</div></div><div class="progress"><div class="bar ${s.pct<db.threshold?'bad':''}" style="width:${Math.min(s.pct,100)}%"></div></div><div class="row"><span class="status ${st[1]}">${st[0]}</span><span class="muted">${s.done}/${s.total} obbligatori</span></div></article>`}).join("")}</div>`;
+ <div class="animator-filters"><label class="search-field"><span class="sr-only">Cerca animatore</span><input id="animator-search" type="search" placeholder="Cerca animatore..." value="${esc(animatorSearch)}"></label><label class="sort-field"><span class="sr-only">Ordina animatori</span><select id="animator-sort"><option value="az" ${animatorSort==="az"?"selected":""}>A → Z</option><option value="za" ${animatorSort==="za"?"selected":""}>Z → A</option></select></label></div>
+ <div class="cards">${visibleAnimators.length?visibleAnimators.map(a=>{const s=stats(a),st=status(s);return `<article class="card anim-card" onclick="location.hash='#/animatore/${a.id}'"><div class="row"><div class="nickname">${esc(a.nickname)}</div><div class="pct">${s.pct}%</div></div><div class="progress"><div class="bar ${s.pct<db.threshold?'bad':''}" style="width:${Math.min(s.pct,100)}%"></div></div><div class="row"><span class="status ${st[1]}">${st[0]}</span><span class="muted">${s.done}/${s.total} obbligatori</span></div></article>`}).join(""):`<div class="empty">Nessun animatore trovato.</div>`}</div>`;
+ document.querySelector("#animator-search").addEventListener("input",event=>{
+   animatorSearch=event.target.value;
+   home();
+   const search=document.querySelector("#animator-search");
+   search.focus();
+   search.setSelectionRange(search.value.length,search.value.length);
+ });
+ document.querySelector("#animator-sort").addEventListener("change",event=>{
+   animatorSort=event.target.value;
+   home();
+ });
 }
 function detail(id){
  const a=db.animators.find(x=>x.id===id); if(!a)return home(); const s=stats(a),st=status(s);

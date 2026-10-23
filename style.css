@@ -5,3 +5,4 @@
  .auth-status-button{border:0;padding:0;background:transparent;color:var(--muted);font:inherit;font-weight:inherit;cursor:pointer;white-space:nowrap}
  .auth-status-button:hover,.auth-status-button:focus-visible{color:var(--text)}
  @media(max-width:480px){.auth-status-button{max-width:145px;overflow:hidden;text-overflow:ellipsis}}
+ .animator-filters{display:flex;gap:10px;margin:16px 0}.search-field{flex:1}.search-field input,.sort-field select{width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:11px;font:inherit;background:var(--control);color:var(--text)}.sort-field{min-width:130px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:480px){.animator-filters{flex-direction:column}.sort-field{min-width:0}}
