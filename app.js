@@ -34,7 +34,7 @@ let selectedMeetingId=null;
 let currentUser=null;
 function getUserDisplayName(user){
   const metadata=user?.user_metadata||{};
-  return metadata.full_name||metadata.name||metadata.display_name||user?.email||"Educatore";
+  return metadata.display_name||metadata.full_name||metadata.name||user?.email||"Educatore";
 }
 function updateAuthStatus(){
   const status=document.querySelector("#auth-status");
@@ -43,7 +43,7 @@ function updateAuthStatus(){
     status.innerHTML="";
     return;
   }
-  status.innerHTML=`<button class="admin-link" type="button" onclick="signOut()">👤 ${esc(getUserDisplayName(currentUser))} · Esci</button>`;
+  status.innerHTML=`<button class="auth-status-button" type="button" onclick="signOut()">👤 ${esc(getUserDisplayName(currentUser))} · Esci</button>`;
 }
 async function signOut(){
   const {error}=await supabaseClient.auth.signOut();
